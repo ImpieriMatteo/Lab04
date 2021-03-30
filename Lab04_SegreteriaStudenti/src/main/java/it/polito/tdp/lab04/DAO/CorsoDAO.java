@@ -65,6 +65,7 @@ public class CorsoDAO {
 			
 			ResultSet rs = st.executeQuery();
 			
+			rs.next();
 			Corso c = new Corso(rs.getString("codins"), rs.getInt("crediti"), rs.getString("nome"), rs.getInt("pd"));
 			
 			rs.close();
@@ -114,7 +115,6 @@ public class CorsoDAO {
 			return studenti;
 				
 		} catch (SQLException e) {
-			// e.printStackTrace();
 			throw new RuntimeException("Errore Db", e);
 		}
 	}

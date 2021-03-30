@@ -64,12 +64,12 @@
                         <Insets left="8.0" right="8.0" />
                      </HBox.margin>
                   </Button>
-                  <TextField fx:id="txtNomeMatr" editable="false" promptText="Cognome">
+                  <TextField fx:id="txtCognomeMatr" editable="false" promptText="Cognome">
                      <HBox.margin>
                         <Insets right="8.0" />
                      </HBox.margin>
                   </TextField>
-                  <TextField fx:id="txtCognomeMatr" editable="false" promptText="Nome" />
+                  <TextField fx:id="txtNomeMatr" editable="false" promptText="Nome" />
                </children>
                <VBox.margin>
                   <Insets bottom="10.0" top="10.0" />

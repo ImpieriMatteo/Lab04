@@ -85,4 +85,30 @@ public class StudenteDAO {
 			throw new RuntimeException("Errore Db", e);
 		}
 	}
+	
+	public boolean isStudenteIscrittoAlCorso(Integer matricola, String codins) {
+		
+		final String sql = "SELECT codins FROM iscrizione WHERE codins = ? AND matricola = ?";
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, codins);
+			st.setInt(2, matricola);
+			
+			ResultSet rs = st.executeQuery();
+			
+			rs.next();
+			String temp = rs.getString("codins");
+			
+			rs.close();
+			st.close();
+			conn.close();
+			
+			return true;
+			
+		} catch(SQLException e) {
+			throw new RuntimeException("Errore Db", e);
+		}
+	}
 }

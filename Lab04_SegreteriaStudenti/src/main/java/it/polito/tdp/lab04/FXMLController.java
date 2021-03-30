@@ -49,12 +49,31 @@ public class FXMLController {
     void handleCercaCorsi(ActionEvent event) {
     	this.txtResult.clear();
     	Integer matricola;
+    	String txtCorso = this.boxLanguage.getValue();
     	
     	try {
     		matricola = Integer.parseInt(this.txtMatricola.getText());
     	}catch(NumberFormatException e) {
     		this.txtResult.setText("Formato della matricola non corretto!!");
     		return;
+    	}
+    	
+    	if(txtCorso!=null && !txtCorso.equals("")) {
+    		String[] codins = txtCorso.split("-");
+    
+    		try {
+    			this.model.isStudenteIscrittoAlCorso(matricola, codins[1]);
+    			
+    			this.txtResult.setText("Matricola iscritta al corso");
+    			return;
+    		}catch(RuntimeException re) {
+    			this.txtResult.setText("Matricola non iscritta al corso");
+    			return;
+    		}
+    		catch(Exception e) {
+        		this.txtResult.setText("Matricola non presente nel DataBase!!");
+    			return;
+        	}
     	}
     	
     	try {
@@ -65,6 +84,9 @@ public class FXMLController {
     			this.txtResult.appendText(String.format("%-10s ", c.getPeriodoDidattico()));
     			this.txtResult.appendText("\n");
     		}
+    	}catch(NullPointerException npe) {
+    		this.txtResult.setText("Matricola non iscritta ad alcun corso");
+    		return;
     	}catch(Exception e) {
     		this.txtResult.setText("Matricola non presente nel DataBase!!");
 			return;
@@ -81,13 +103,18 @@ public class FXMLController {
     		return;
     	}
     	else {
-    		String[] codins = txtCorso.split("-");
-    		for(Studente s : this.model.getStudentiIscrittiAlCorso(codins[0])) {
-    			this.txtResult.appendText(String.format("%-10s ", s.getMatricola()));
-    			this.txtResult.appendText(String.format("%-40s ", s.getCognome()));
-    			this.txtResult.appendText(String.format("%-40s ", s.getNome()));
-    			this.txtResult.appendText(String.format("%-10s ", s.getCDS()));
-    			this.txtResult.appendText("\n");
+    		try {
+    			String[] codins = txtCorso.split("-");
+    			for(Studente s : this.model.getStudentiIscrittiAlCorso(codins[1])) {
+    				this.txtResult.appendText(String.format("%-10s ", s.getMatricola()));
+    				this.txtResult.appendText(String.format("%-40s ", s.getCognome()));
+    				this.txtResult.appendText(String.format("%-40s ", s.getNome()));
+    				this.txtResult.appendText(String.format("%-10s ", s.getCDS()));
+    				this.txtResult.appendText("\n");
+    			}
+    		}catch(NullPointerException npe) {
+    			this.txtResult.setText("Nessuna matricola iscritta al corso");
+    	   		return;
     		}
     	}
     }
@@ -144,7 +171,7 @@ public class FXMLController {
 		
 		this.boxLanguage.getItems().add("");
 		for(Corso c : this.model.getTuttiICorsi()) {
-			this.boxLanguage.getItems().add(c.getCodins()+"-"+c.getNome());
+			this.boxLanguage.getItems().add(c.getNome()+"-"+c.getCodins());
 		}
 	}
 }

@@ -50,6 +50,21 @@ public class Model {
 		}
 	}
 	
+	public void isStudenteIscrittoAlCorso(Integer matricola, String codins) throws Exception{
+		List<Studente> studenti = this.studenteDAO.getTuttiGliStudenti();
+		Studente temp = ricercaDicotomicaStudente(studenti, matricola, 0, studenti.size());
+		
+		if(temp==null)
+			throw new Exception();
+		else {
+			try {
+				this.studenteDAO.isStudenteIscrittoAlCorso(matricola, codins);
+			}catch(RuntimeException re) {
+				throw new RuntimeException();
+			}
+		}
+	}
+	
 	private Studente ricercaDicotomicaStudente(List<Studente> studenti, Integer matricola, Integer low, Integer high) {
 		Integer mid = (low+high)/2;
 		
