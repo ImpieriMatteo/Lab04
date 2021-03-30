@@ -44,7 +44,6 @@ public class CorsoDAO {
 			
 			return corsi;
 			
-
 		} catch (SQLException e) {
 			// e.printStackTrace();
 			throw new RuntimeException("Errore Db", e);
@@ -55,15 +54,69 @@ public class CorsoDAO {
 	/*
 	 * Dato un codice insegnamento, ottengo il corso
 	 */
-	public void getCorso(Corso corso) {
-		// TODO
+	public Corso getCorso(String codins) {
+		
+		final String sql = "SELECT * FROM corso WHERE codins = ?";
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, codins);
+			
+			ResultSet rs = st.executeQuery();
+			
+			Corso c = new Corso(rs.getString("codins"), rs.getInt("crediti"), rs.getString("nome"), rs.getInt("pd"));
+			
+			rs.close();
+			st.close();
+			conn.close();
+			
+			return c;
+			
+		} catch(SQLException e) {
+			throw new RuntimeException("Errore db", e);
+		}
 	}
 
 	/*
 	 * Ottengo tutti gli studenti iscritti al Corso
 	 */
-	public void getStudentiIscrittiAlCorso(Corso corso) {
-		// TODO
+	public List<Studente> getStudentiIscrittiAlCorso(String codins) {
+		
+		final String sql = "SELECT s.matricola, s.cognome, s.nome, s.CDS "
+				+ "FROM iscrizione i, studente s "
+				+ "WHERE i.matricola = s.matricola AND codins=?";
+
+		List<Studente> studenti = new LinkedList<Studente>();
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, codins);
+
+			ResultSet rs = st.executeQuery();
+
+			while (rs.next()) {
+
+				Integer matricola = rs.getInt("matricola");
+				String cognome = rs.getString("cognome");
+				String nome = rs.getString("nome");
+				String CDS = rs.getString("CDS");
+
+				Studente s = new Studente(matricola, cognome, nome, CDS);
+				studenti.add(s);
+			}
+
+			rs.close();
+			st.close();
+			conn.close();
+				
+			return studenti;
+				
+		} catch (SQLException e) {
+			// e.printStackTrace();
+			throw new RuntimeException("Errore Db", e);
+		}
 	}
 
 	/*

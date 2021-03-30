@@ -69,8 +69,6 @@ public class Studente {
 		} else if (!matricola.equals(other.matricola))
 			return false;
 		return true;
-	}
-	
-	
+	}	
 	
 }

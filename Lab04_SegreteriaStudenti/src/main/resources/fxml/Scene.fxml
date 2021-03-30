@@ -54,7 +54,7 @@
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="txtMatricola" prefWidth="80.0">
+                  <TextField fx:id="txtMatricola" prefWidth="80.0" promptText="Matr.">
                      <HBox.margin>
                         <Insets left="8.0" />
                      </HBox.margin>
@@ -64,12 +64,12 @@
                         <Insets left="8.0" right="8.0" />
                      </HBox.margin>
                   </Button>
-                  <TextField fx:id="txtNomeMatr" editable="false">
+                  <TextField fx:id="txtNomeMatr" editable="false" promptText="Cognome">
                      <HBox.margin>
                         <Insets right="8.0" />
                      </HBox.margin>
                   </TextField>
-                  <TextField fx:id="txtCognomeMatr" editable="false" />
+                  <TextField fx:id="txtCognomeMatr" editable="false" promptText="Nome" />
                </children>
                <VBox.margin>
                   <Insets bottom="10.0" top="10.0" />

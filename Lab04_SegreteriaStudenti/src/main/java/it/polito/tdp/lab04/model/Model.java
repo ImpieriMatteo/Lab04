@@ -35,6 +35,10 @@ public class Model {
 		
 	}
 	
+	public List<Studente> getStudentiIscrittiAlCorso(String codins){
+		return this.corsoDAO.getStudentiIscrittiAlCorso(codins);
+	}
+	
 	private Studente ricercaDicotomicaStudente(List<Studente> studenti, Integer matricola, Integer low, Integer high) {
 		Integer mid = (low+high)/2;
 		

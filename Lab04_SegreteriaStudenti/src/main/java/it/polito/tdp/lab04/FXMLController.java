@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 
 import it.polito.tdp.lab04.model.Corso;
 import it.polito.tdp.lab04.model.Model;
+import it.polito.tdp.lab04.model.Studente;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -51,7 +52,23 @@ public class FXMLController {
 
     @FXML
     void handleCercaIscrittiCorso(ActionEvent event) {
-
+    	this.txtResult.clear();
+    	String txtCorso = this.boxLanguage.getValue();
+    	
+    	if(txtCorso==null) {
+    		this.txtResult.setText("Devi scegliere un corso!!");
+    		return;
+    	}
+    	else {
+    		String[] codins = txtCorso.split("-");
+    		for(Studente s : this.model.getStudentiIscrittiAlCorso(codins[0])) {
+    			this.txtResult.appendText(String.format("%-10s ", s.getMatricola()));
+    			this.txtResult.appendText(String.format("%-40s ", s.getCognome()));
+    			this.txtResult.appendText(String.format("%-40s ", s.getNome()));
+    			this.txtResult.appendText(String.format("%-10s ", s.getCDS()));
+    			this.txtResult.appendText("\n");
+    		}
+    	}
     }
 
     @FXML
@@ -83,7 +100,10 @@ public class FXMLController {
 
     @FXML
     void handleReset(ActionEvent event) {
-
+    	this.txtResult.clear();
+    	this.txtMatricola.clear();
+    	this.txtCognomeMatr.clear();
+    	this.txtNomeMatr.clear();
     }
 
     @FXML
@@ -103,7 +123,7 @@ public class FXMLController {
 		
 		this.boxLanguage.getItems().add("");
 		for(Corso c : this.model.getTuttiICorsi()) {
-			this.boxLanguage.getItems().add(c.getCodins()+" - "+c.getNome());
+			this.boxLanguage.getItems().add(c.getCodins()+"-"+c.getNome());
 		}
 	}
 }
