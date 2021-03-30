@@ -22,11 +22,11 @@ public class Model {
 	
 	public List<String> getCognomeNomeStudente(Integer matricola) throws Exception {
 		List<Studente> studenti = this.studenteDAO.getTuttiGliStudenti();
+		Studente temp = ricercaDicotomicaStudente(studenti, matricola, 0, studenti.size());
 		
-		if(ricercaDicotomicaStudente(studenti, matricola, 0, studenti.size())==null)
+		if(temp==null)
 			throw new Exception();
 		else {
-			Studente temp = ricercaDicotomicaStudente(studenti, matricola, 0, studenti.size());
 			List<String> tempL = new ArrayList<>();
 			tempL.add(temp.getCognome());
 			tempL.add(temp.getNome());
@@ -37,6 +37,17 @@ public class Model {
 	
 	public List<Studente> getStudentiIscrittiAlCorso(String codins){
 		return this.corsoDAO.getStudentiIscrittiAlCorso(codins);
+	}
+	
+	public List<Corso> getCorsiPerStudente(Integer matricola) throws Exception {
+		List<Studente> studenti = this.studenteDAO.getTuttiGliStudenti();
+		Studente temp = ricercaDicotomicaStudente(studenti, matricola, 0, studenti.size());
+		
+		if(temp==null)
+			throw new Exception();
+		else {
+			return this.studenteDAO.getCorsiPerStudente(matricola);
+		}
 	}
 	
 	private Studente ricercaDicotomicaStudente(List<Studente> studenti, Integer matricola, Integer low, Integer high) {

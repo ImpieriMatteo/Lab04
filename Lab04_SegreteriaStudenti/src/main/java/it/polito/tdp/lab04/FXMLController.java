@@ -47,7 +47,28 @@ public class FXMLController {
 
     @FXML
     void handleCercaCorsi(ActionEvent event) {
-
+    	this.txtResult.clear();
+    	Integer matricola;
+    	
+    	try {
+    		matricola = Integer.parseInt(this.txtMatricola.getText());
+    	}catch(NumberFormatException e) {
+    		this.txtResult.setText("Formato della matricola non corretto!!");
+    		return;
+    	}
+    	
+    	try {
+    		for(Corso c : this.model.getCorsiPerStudente(matricola)) {
+    			this.txtResult.appendText(String.format("%-15s ", c.getCodins()));
+    			this.txtResult.appendText(String.format("%-10s ", c.getNumeroCrediti()));
+    			this.txtResult.appendText(String.format("%-50s ", c.getNome()));
+    			this.txtResult.appendText(String.format("%-10s ", c.getPeriodoDidattico()));
+    			this.txtResult.appendText("\n");
+    		}
+    	}catch(Exception e) {
+    		this.txtResult.setText("Matricola non presente nel DataBase!!");
+			return;
+    	}
     }
 
     @FXML
@@ -55,7 +76,7 @@ public class FXMLController {
     	this.txtResult.clear();
     	String txtCorso = this.boxLanguage.getValue();
     	
-    	if(txtCorso==null) {
+    	if(txtCorso==null || txtCorso.equals("")) {
     		this.txtResult.setText("Devi scegliere un corso!!");
     		return;
     	}
