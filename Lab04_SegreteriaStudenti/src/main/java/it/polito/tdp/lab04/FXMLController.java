@@ -1,13 +1,16 @@
 package it.polito.tdp.lab04;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.lab04.model.Corso;
 import it.polito.tdp.lab04.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -24,7 +27,7 @@ public class FXMLController {
     private URL location;
 
     @FXML
-    private ComboBox<?> boxLanguage;
+    private ComboBox<String> boxLanguage;
 
     @FXML
     private TextField txtMatricola;
@@ -39,7 +42,7 @@ public class FXMLController {
     private TextField txtCognomeMatr;
 
     @FXML
-    private TextField txtResult;
+    private TextArea txtResult;
 
     @FXML
     void handleCercaCorsi(ActionEvent event) {
@@ -53,7 +56,24 @@ public class FXMLController {
 
     @FXML
     void handleCompletamentoAuto(ActionEvent event) {
-
+    	Integer matricola;
+    	
+    	try {
+    		matricola = Integer.parseInt(this.txtMatricola.getText());
+    	}catch(NumberFormatException e) {
+    		this.txtResult.setText("Formato della matricola non corretto!!");
+    		return;
+    	}
+    	
+    	try {
+			List<String> cognomeNome = this.model.getCognomeNomeStudente(matricola);
+			this.txtCognomeMatr.setText(cognomeNome.get(0));
+			this.txtNomeMatr.setText(cognomeNome.get(1));
+		}catch(Exception e) {
+			this.txtResult.setText("Matricola non presente nel DataBase!!");
+			return;
+		}
+    	
     }
 
     @FXML
@@ -81,5 +101,9 @@ public class FXMLController {
 		this.model = model;
 		this.btnCompletamentoAuto.setBackground(new Background(new BackgroundFill(Color.LAWNGREEN, null, null)));
 		
+		this.boxLanguage.getItems().add("");
+		for(Corso c : this.model.getTuttiICorsi()) {
+			this.boxLanguage.getItems().add(c.getCodins()+" - "+c.getNome());
+		}
 	}
 }
