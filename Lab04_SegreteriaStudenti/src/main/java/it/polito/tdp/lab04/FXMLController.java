@@ -28,7 +28,7 @@ public class FXMLController {
     private URL location;
 
     @FXML
-    private ComboBox<String> boxLanguage;
+    private ComboBox<Corso> boxLanguage;
 
     @FXML
     private TextField txtMatricola;
@@ -49,7 +49,6 @@ public class FXMLController {
     void handleCercaCorsi(ActionEvent event) {
     	this.txtResult.clear();
     	Integer matricola;
-    	String txtCorso = this.boxLanguage.getValue();
     	
     	try {
     		matricola = Integer.parseInt(this.txtMatricola.getText());
@@ -58,37 +57,20 @@ public class FXMLController {
     		return;
     	}
     	
-    	if(txtCorso!=null && !txtCorso.equals("")) {
-    		String[] codins = txtCorso.split("-");
-    
-    		try {
-    			this.model.isStudenteIscrittoAlCorso(matricola, codins[1]);
-    			
-    			this.txtResult.setText("Matricola iscritta al corso");
-    			return;
-    		}catch(RuntimeException re) {
-    			this.txtResult.setText("Matricola non iscritta al corso");
-    			return;
-    		}
-    		catch(Exception e) {
-        		this.txtResult.setText("Matricola non presente nel DataBase!!");
-    			return;
-        	}
-    	}
-    	
     	try {
+    		StringBuilder sb = new StringBuilder();
+    		
     		for(Corso c : this.model.getCorsiPerStudente(matricola)) {
-    			this.txtResult.appendText(String.format("%-15s ", c.getCodins()));
-    			this.txtResult.appendText(String.format("%-10s ", c.getNumeroCrediti()));
-    			this.txtResult.appendText(String.format("%-50s ", c.getNome()));
-    			this.txtResult.appendText(String.format("%-10s ", c.getPeriodoDidattico()));
-    			this.txtResult.appendText("\n");
+    			sb.append(String.format("%-10s %-4d %-55s %-2d", c.getCodins(), c.getNumeroCrediti(), c.getNome(), c.getPeriodoDidattico()));
+    			sb.append("\n");
     		}
+    		this.txtResult.appendText(sb.toString());
+    		
     	}catch(NullPointerException npe) {
-    		this.txtResult.setText("Matricola non iscritta ad alcun corso");
+    		this.txtResult.setText("Studente non iscritto ad alcun corso");
     		return;
     	}catch(Exception e) {
-    		this.txtResult.setText("Matricola non presente nel DataBase!!");
+    		this.txtResult.setText("Studente non presente nel DataBase!!");
 			return;
     	}
     }
@@ -96,7 +78,7 @@ public class FXMLController {
     @FXML
     void handleCercaIscrittiCorso(ActionEvent event) {
     	this.txtResult.clear();
-    	String txtCorso = this.boxLanguage.getValue();
+    	String txtCorso = this.boxLanguage.getValue().getCodins();
     	
     	if(txtCorso==null || txtCorso.equals("")) {
     		this.txtResult.setText("Devi scegliere un corso!!");
@@ -104,16 +86,16 @@ public class FXMLController {
     	}
     	else {
     		try {
-    			String[] codins = txtCorso.split("-");
-    			for(Studente s : this.model.getStudentiIscrittiAlCorso(codins[1])) {
-    				this.txtResult.appendText(String.format("%-10s ", s.getMatricola()));
-    				this.txtResult.appendText(String.format("%-40s ", s.getCognome()));
-    				this.txtResult.appendText(String.format("%-40s ", s.getNome()));
-    				this.txtResult.appendText(String.format("%-10s ", s.getCDS()));
-    				this.txtResult.appendText("\n");
+    			StringBuilder sb = new StringBuilder();
+    			
+    			for(Studente s : this.model.getStudentiIscrittiAlCorso(txtCorso)) {
+    				sb.append(String.format("%-10s %-25s %-25s %-10s", s.getMatricola(), s.getCognome(), s.getNome(), s.getCDS()));
+    				sb.append("\n");
     			}
+    			this.txtResult.appendText(sb.toString());
+    			
     		}catch(NullPointerException npe) {
-    			this.txtResult.setText("Nessuna matricola iscritta al corso");
+    			this.txtResult.setText("Nessuno studente iscritto al corso");
     	   		return;
     		}
     	}
@@ -135,7 +117,7 @@ public class FXMLController {
 			this.txtCognomeMatr.setText(cognomeNome.get(0));
 			this.txtNomeMatr.setText(cognomeNome.get(1));
 		}catch(Exception e) {
-			this.txtResult.setText("Matricola non presente nel DataBase!!");
+			this.txtResult.setText("Studente non presente nel DataBase!!");
 			return;
 		}
     	
@@ -143,7 +125,32 @@ public class FXMLController {
 
     @FXML
     void handleIscrivi(ActionEvent event) {
-
+    	this.txtResult.clear();
+    	Integer matricola;
+    	String txtCorso = this.boxLanguage.getValue().getCodins();
+    	
+    	try {
+    		matricola = Integer.parseInt(this.txtMatricola.getText());
+    	}catch(NumberFormatException e) {
+    		this.txtResult.setText("Formato della matricola non corretto!!");
+    		return;
+    	}
+    	
+    	if(txtCorso!=null && !txtCorso.equals("")) {
+    
+    		try {
+    			if(this.model.studenteIscrittoAlCorso(matricola, txtCorso))
+    				this.txtResult.setText("Studente già iscritto a questo corso");
+    			else
+    				this.txtResult.setText("Studente iscritto al corso!!");
+    		}catch(Exception e) {
+        		this.txtResult.setText("Matricola non presente nel DataBase!!");
+    			return;
+        	}
+    	}
+    	else {
+    		this.txtResult.setText("Devi scegliere un corso!!");
+    	}
     }
 
     @FXML
@@ -152,6 +159,7 @@ public class FXMLController {
     	this.txtMatricola.clear();
     	this.txtCognomeMatr.clear();
     	this.txtNomeMatr.clear();
+    	this.boxLanguage.setValue(null);
     }
 
     @FXML
@@ -168,10 +176,11 @@ public class FXMLController {
 	public void setModel(Model model) {
 		this.model = model;
 		this.btnCompletamentoAuto.setBackground(new Background(new BackgroundFill(Color.LAWNGREEN, null, null)));
+		this.txtResult.setStyle("-fx-font-family: monospace");
 		
-		this.boxLanguage.getItems().add("");
+		this.boxLanguage.getItems().add(new Corso("", null, null, null));
 		for(Corso c : this.model.getTuttiICorsi()) {
-			this.boxLanguage.getItems().add(c.getNome()+"-"+c.getCodins());
+			this.boxLanguage.getItems().add(c);
 		}
 	}
 }

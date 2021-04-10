@@ -86,7 +86,7 @@ public class StudenteDAO {
 		}
 	}
 	
-	public boolean isStudenteIscrittoAlCorso(Integer matricola, String codins) {
+	public boolean studenteIscrittoAlCorso(Integer matricola, String codins) {
 		
 		final String sql = "SELECT codins FROM iscrizione WHERE codins = ? AND matricola = ?";
 
@@ -98,14 +98,31 @@ public class StudenteDAO {
 			
 			ResultSet rs = st.executeQuery();
 			
-			rs.next();
-			String temp = rs.getString("codins");
-			
-			rs.close();
-			st.close();
-			conn.close();
-			
-			return true;
+			if(rs.next()) {
+				rs.close();
+				st.close();
+				conn.close();
+				
+				return true;
+			}
+			else {
+				rs.close();
+				st.close();
+				
+				final String sql2 = "INSERT INTO iscrizione VALUES (?, ?)";
+				
+				PreparedStatement st2 = conn.prepareStatement(sql2);
+				st2.setInt(1, matricola);
+				st2.setString(2, codins);
+				
+				ResultSet rs2 = st2.executeQuery();
+				
+				rs2.close();
+				st2.close();
+				conn.close();
+				
+				return false;
+			}
 			
 		} catch(SQLException e) {
 			throw new RuntimeException("Errore Db", e);

@@ -50,18 +50,14 @@ public class Model {
 		}
 	}
 	
-	public void isStudenteIscrittoAlCorso(Integer matricola, String codins) throws Exception{
+	public boolean studenteIscrittoAlCorso(Integer matricola, String codins) throws Exception{
 		List<Studente> studenti = this.studenteDAO.getTuttiGliStudenti();
 		Studente temp = ricercaDicotomicaStudente(studenti, matricola, 0, studenti.size());
 		
 		if(temp==null)
 			throw new Exception();
 		else {
-			try {
-				this.studenteDAO.isStudenteIscrittoAlCorso(matricola, codins);
-			}catch(RuntimeException re) {
-				throw new RuntimeException();
-			}
+			return this.studenteDAO.studenteIscrittoAlCorso(matricola, codins);
 		}
 	}
 	
